@@ -1,3 +1,6 @@
+/*
+Copyright © 2023 Pasan Nissanka pasannissanka@outlook.com
+*/
 package hnapi
 
 import (
@@ -49,7 +52,7 @@ func GetItems() ([]int, error) {
 		return topItems, nil
 	}
 
-	return nil, errors.New("Something went wrong")
+	return nil, errors.New("something went wrong")
 }
 
 func GetPost(id int) (*Post, error) {
@@ -71,17 +74,13 @@ func GetPost(id int) (*Post, error) {
 		return &post, nil
 	}
 
-	return nil, errors.New("Something went wrong")
+	return nil, errors.New("something went wrong")
 }
 
-func FetchStories() ([]Post, error) {
+func FetchStories(items []int) ([]Post, error) {
 	var posts []Post
-	topItems, err := GetItems()
-	if err != nil {
-		return nil, err
-	}
 
-	for _, item := range topItems[:3] {
+	for _, item := range items[:5] {
 		post, err := GetPost(item)
 		if err != nil {
 			return nil, err

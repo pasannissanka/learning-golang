@@ -1,12 +1,14 @@
 /*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
+Copyright © 2023 Pasan Nissanka pasannissanka@outlook.com
 */
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/fatih/color"
+	"github.com/manifoldco/promptui"
 	hnapi "github.com/pasannissanka/learning-golang/go-cli-hackernews/hn-api"
 	"github.com/spf13/cobra"
 )
@@ -15,28 +17,56 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "go-cli-hackernews",
 	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
 		info := color.New(color.BgGreen)
-		data := color.New(color.Bold)
 		error := color.New(color.BgRed)
 
 		info.Println("Fetching Latest HackerNews Posts...")
 
-		resp, err := hnapi.FetchStories()
+		postIds, err := hnapi.GetItems()
 		if err != nil {
 			error.Println(err)
 			os.Exit(1)
 		}
-		data.Print(resp)
 
+		prompt := promptui.Prompt{
+			Label:     "Load more posts",
+			IsConfirm: true,
+			Default:   "y",
+		}
+
+		stories, err := hnapi.FetchStories(postIds[:5])
+		if err != nil {
+			error.Println(err)
+			os.Exit(1)
+		}
+		fmt.Print(stories)
+
+		for i := 1; i < len(postIds)/5; i++ {
+
+			result, err := prompt.Run()
+			if err != nil {
+				info.Println("Exiting...")
+				os.Exit(1)
+			}
+			if result == "n" {
+				info.Println("Exiting...")
+				os.Exit(1)
+			}
+
+			stories, err := hnapi.FetchStories(postIds[(i+1)*5 : (i+2)*5])
+			if err != nil {
+				error.Println(err)
+				os.Exit(1)
+			}
+
+			fmt.Print(stories)
+		}
+		info.Println("Exiting...")
+		os.Exit(1)
 	},
 }
 
