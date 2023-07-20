@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/fatih/color"
@@ -42,7 +42,7 @@ func GetItems() ([]int, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusOK {
 		var topItems []int
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		json.Unmarshal(body, &topItems)
 
 		if err != nil {
@@ -64,7 +64,7 @@ func GetPost(id int) (*Post, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusOK {
 		var post Post
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		json.Unmarshal(body, &post)
 
 		if err != nil {
