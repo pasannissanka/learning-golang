@@ -1,7 +1,7 @@
 package db
 
 import (
-	todoentity "github.com/pasannissanka/learning-golang/go-crud-rest-api/modules/todo/entity"
+	"github.com/pasannissanka/learning-golang/go-crud-rest-api/entities"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -13,7 +13,7 @@ func Init() {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	err = db.AutoMigrate(&todoentity.Todo{})
+	err = db.AutoMigrate(&entities.Todo{})
 	if err != nil {
 		return
 	}

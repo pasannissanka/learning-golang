@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/pasannissanka/learning-golang/go-crud-rest-api/modules/todo"
+	"github.com/pasannissanka/learning-golang/go-crud-rest-api/controllers"
 )
 
 func GetRoutes(rg *gin.RouterGroup) {
@@ -10,7 +10,6 @@ func GetRoutes(rg *gin.RouterGroup) {
 	{
 		// todo routes
 		todos := v1.Group("/todo")
-		todos.GET("/", todo.GetTodos)
-		todos.POST("/", todo.CreateTodos)
+		controllers.TodoController(todos)
 	}
 }
