@@ -10,8 +10,8 @@ import (
 	"github.com/pasannissanka/learning-golang/go-crud-rest-api/utils"
 )
 
-func TodoController(rg *gin.RouterGroup) {
-	rg.GET("/", func(c *gin.Context) {
+func TodoController(router *gin.RouterGroup) {
+	router.GET("/", func(c *gin.Context) {
 		todos, err := services.GetTodos()
 
 		if err != nil {
@@ -27,7 +27,7 @@ func TodoController(rg *gin.RouterGroup) {
 		})
 	})
 
-	rg.POST("/", func(c *gin.Context) {
+	router.POST("/", func(c *gin.Context) {
 		body := entities.Todo{}
 
 		if err := c.ShouldBindJSON(&body); err != nil {
@@ -48,6 +48,66 @@ func TodoController(rg *gin.RouterGroup) {
 		c.JSON(200, gin.H{
 			"message": "create todos",
 			"data":    todo,
+		})
+	})
+
+	router.GET("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		todo, err := services.GetTodoById(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   err.Error(),
+				"message": "not found",
+			})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"message": "found todo",
+			"data":    todo,
+		})
+	})
+
+	router.POST("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		body := entities.Todo{}
+
+		if err := c.ShouldBindJSON(&body); err != nil {
+			errors := utils.ExtractValidationErrors(err.(validator.ValidationErrors))
+			c.JSON(http.StatusBadRequest, gin.H{"errors": errors, "message": "validation error"})
+			return
+		}
+
+		todo, err := services.UpdateTodo(id, body)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   err.Error(),
+				"message": "not found",
+			})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"message": "todo updated todo",
+			"data":    todo,
+		})
+	})
+
+	router.DELETE("/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		err := services.DeleteTodoById(id)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":   err.Error(),
+				"message": "not found",
+			})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"message": "todo deleted",
 		})
 	})
 }
